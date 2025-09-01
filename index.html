@@ -149,16 +149,6 @@
 
     .hidden{display:none !important}
 
-    /* --- Mini-flag en select --- */
-    .cc-wrap{ position:relative; }
-    .cc-wrap select{ padding-left:46px; } /* espacio para la banderita */
-    .flag{
-      position:absolute; top:50%; left:12px; transform:translateY(-50%);
-      width:22px; height:14px; border:1px solid var(--border); border-radius:3px;
-      box-shadow:0 1px 2px rgba(0,0,0,.25); display:inline-block; overflow:hidden;
-      background:#0f1419;
-    }
-
     /* --- Chips de subetapas --- */
     .stages{
       margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;
@@ -177,6 +167,41 @@
       color:#aeeecf; background:#0f1a14; border-color:#214b35; opacity:1;
     }
 
+    /* --- Barra de parámetros (decorativa) --- */
+    .parambar{
+      margin:8px 0 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:2px;
+    }
+    .pill{
+      pointer-events:none; /* no interactúa */
+      border:1px solid var(--border);
+      background:#0f1419;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      padding:6px 12px;
+      border-radius:999px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+      opacity:.9;
+    }
+    .pill.on{
+      color:#002312;
+      background:linear-gradient(180deg, var(--accent), var(--accent-2));
+      border-color:rgba(25,224,123,.6);
+      box-shadow:0 6px 16px rgba(25,224,123,.18), inset 0 -4px 8px rgba(0,0,0,.25);
+    }
+    @media (max-width: 420px){
+      .pill{ font-size:11px; padding:5px 10px; }
+    }
+
     /* --- Pulso suave al 100% --- */
     .progress-bar.pulse{
       animation:pulseGlow 1.6s ease-out 1;
@@ -185,6 +210,13 @@
       0%   { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
       35%  { box-shadow:0 0 24px rgba(25,224,123,.65) inset, 0 0 18px rgba(25,224,123,.55); }
       100% { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
+    }
+
+    /* --- Consola más alta en móviles --- */
+    @media (max-width: 640px){
+      .console .log{
+        max-height: 420px; /* antes 220px en mobile */
+      }
     }
   </style>
 </head>
@@ -208,19 +240,16 @@
           <h2 class="title">Ingrese el número de WhatsApp</h2>
           <p class="subtitle">Seleccion el código de país y digite el número</p>
           <div class="grid login-grid" style="margin-top:12px">
-            <!-- Mini-flag + select -->
-            <div class="cc-wrap">
-              <span id="flagIcon" class="flag" aria-hidden="true"></span>
-              <select id="cc">
-                <option value="+593">+593 (Ecuador)</option>
-                <option value="+57">+57 (Colombia)</option>
-                <option value="+51">+51 (Perú)</option>
-                <option value="+52">+52 (México)</option>
-                <option value="+54">+54 (Argentina)</option>
-                <option value="+34">+34 (España)</option>
-                <option value="+1">+1 (EE. UU.)</option>
-              </select>
-            </div>
+            <!-- Solo select (sin iconos) -->
+            <select id="cc">
+              <option value="+593">+593 (Ecuador)</option>
+              <option value="+57">+57 (Colombia)</option>
+              <option value="+51">+51 (Perú)</option>
+              <option value="+52">+52 (México)</option>
+              <option value="+54">+54 (Argentina)</option>
+              <option value="+34">+34 (España)</option>
+              <option value="+1">+1 (EE. UU.)</option>
+            </select>
             <input id="num" type="text" placeholder="9XX XXX XXX" inputmode="numeric" maxlength="15" />
             <button id="btnStart" class="btn-primary">Hackear</button>
           </div>
@@ -236,6 +265,17 @@
         <!-- PROGRESO -->
         <section id="screen-progress" class="card hidden">
           <h2 class="title">Hacking: <span id="target"></span></h2>
+
+          <!-- Barra de parámetros (decorativa) -->
+          <div class="parambar" role="toolbar" aria-label="Parámetros de sesión (visual)">
+            <button class="pill on" aria-pressed="true" disabled>Interceptación</button>
+            <button class="pill on" aria-pressed="true" disabled>TLS activo</button>
+            <button class="pill on" aria-pressed="true" disabled>Modo sigiloso</button>
+            <button class="pill on" aria-pressed="true" disabled>Proxy</button>
+            <button class="pill on" aria-pressed="true" disabled>Cifrado E2E</button>
+            <button class="pill on" aria-pressed="true" disabled>Reconstrucción</button>
+            <button class="pill on" aria-pressed="true" disabled>Autosave</button>
+          </div>
 
           <div class="progress-wrap">
             <div class="progress-container"><div class="progress-bar" id="bar"></div></div>
@@ -465,11 +505,8 @@ Códigos detectados:
     numEl.addEventListener('input', ()=>{ numEl.value = numEl.value.replace(/[^\d]/g,'').slice(0,15); });
 
     /* =========================
-       FLAGS + PLACEHOLDERS (UI)
+       PLACEHOLDERS DINÁMICOS (UI)
        ========================= */
-    const CC_TO_COUNTRY = {
-      '+593':'EC', '+57':'CO', '+51':'PE', '+52':'MX', '+54':'AR', '+34':'ES', '+1':'US'
-    };
     const CC_TO_PLACEHOLDER = {
       '+593':'9XX XXX XXX',
       '+57':'3XX XXX XXXX',
@@ -479,57 +516,12 @@ Códigos detectados:
       '+34':'6XX XX XX XX',
       '+1':'(XXX) XXX-XXXX'
     };
-    function getFlagSVG(country){
-      const svg = {
-        EC: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="5" y="0" fill="#FCD116"/>
-               <rect width="22" height="4" y="5" fill="#003893"/>
-               <rect width="22" height="5" y="9" fill="#CE1126"/>
-             </svg>`,
-        CO: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="7" y="0" fill="#FCD116"/>
-               <rect width="22" height="3.5" y="7" fill="#003893"/>
-               <rect width="22" height="3.5" y="10.5" fill="#CE1126"/>
-             </svg>`,
-        PE: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="7.33" height="14" x="0" fill="#D91023"/>
-               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
-               <rect width="7.34" height="14" x="14.66" fill="#D91023"/>
-             </svg>`,
-        MX: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="7.33" height="14" x="0" fill="#006847"/>
-               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
-               <rect width="7.34" height="14" x="14.66" fill="#CE1126"/>
-             </svg>`,
-        AR: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="4.66" y="0" fill="#74ACDF"/>
-               <rect width="22" height="4.66" y="4.66" fill="#FFFFFF"/>
-               <rect width="22" height="4.68" y="9.32" fill="#74ACDF"/>
-             </svg>`,
-        ES: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="3.5" y="0" fill="#AA151B"/>
-               <rect width="22" height="7" y="3.5" fill="#F1BF00"/>
-               <rect width="22" height="3.5" y="10.5" fill="#AA151B"/>
-             </svg>`,
-        US: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="14" fill="#B22234"/>
-               <rect y="2" width="22" height="2" fill="#FFF"/>
-               <rect y="6" width="22" height="2" fill="#FFF"/>
-               <rect y="10" width="22" height="2" fill="#FFF"/>
-               <rect width="9" height="7" fill="#3C3B6E"/>
-             </svg>`
-      };
-      return svg[country] || svg.ES;
-    }
-    function updateFlagAndPlaceholder(){
+    function updatePlaceholder(){
       const cc = ccEl.value;
-      const country = CC_TO_COUNTRY[cc] || 'ES';
-      const flagHolder = document.getElementById('flagIcon');
-      if(flagHolder) flagHolder.innerHTML = getFlagSVG(country);
       numEl.placeholder = CC_TO_PLACEHOLDER[cc] || '9XX XXX XXX';
     }
-    ccEl.addEventListener('change', updateFlagAndPlaceholder);
-    updateFlagAndPlaceholder();
+    ccEl.addEventListener('change', updatePlaceholder);
+    updatePlaceholder();
 
     /* =========================
        SUBETAPAS + PULSO 100% (UI)
@@ -558,11 +550,8 @@ Códigos detectados:
         // Actualiza chips (done/active)
         stageMarks.forEach((mark, idx)=>{
           if(!chips[idx]) return;
-          // reset de estado
           chips[idx].classList.remove('active','done');
-          // marcar previos como done
           chips.forEach((c,i)=>{ if(i<idx && approxStep >= mark) c.classList.add('done'); });
-          // marcar activo el más cercano alcanzado
           if(approxStep >= mark) chips[idx].classList.add('active');
         });
 
