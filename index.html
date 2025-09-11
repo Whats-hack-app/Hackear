@@ -1,564 +1,651 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Investigador Privado</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️‍♂️</text></svg>">
-<style>
-  :root{
-    --bg:#0c1424; --panel:#12203a; --text:#e8f1ff; --muted:#a8b6d4;
-    --acc:#1f84ff; --acc-2:#00d4b7; --ok:#23d18b; --warn:#ffd166;
-    --radius:16px; --shadow:0 14px 40px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:linear-gradient(180deg,#0b1222 0%, #0a1328 100%);
-    color:var(--text); font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-  }
-  .wrap{min-height:100dvh; display:flex; flex-direction:column}
+  <meta charset="UTF-8" />
+  <title>WhatsHack V3 Pro 1.1.0 — 2025</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0e1114;
+      --surface:#151a1f;
+      --panel:#0f1419;
+      --card:#11161b;
+      --border:#1e2a33;
+      --text:#e7f4ec;
+      --muted:#9acfb8;
+      --accent:#19e07b;
+      --accent-2:#10c469;
+      --warn:#ffd166;
+      --error:#ff6b81;
+      --ok:#35e0a1;
+      --radius:14px;
+      --shadow:0 20px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:
+        radial-gradient(900px 500px at -10% -20%, #1a2430 0%, transparent 60%),
+        radial-gradient(800px 450px at 110% -10%, #18232c 0%, transparent 55%),
+        var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    }
 
-  /* HEADER */
-  header{
-    padding:12px 16px; border-bottom:1px solid #ffffff12;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .brand{display:flex; align-items:center; gap:10px; font-weight:700}
-  .logo{
-    width:32px; height:32px; border-radius:9px;
-    background:radial-gradient(70% 70% at 25% 25%, #ffffff55 0 30%, transparent 31% 100%),
-              linear-gradient(135deg, var(--acc), var(--acc-2));
-    box-shadow:0 4px 16px #00c8ff33;
-  }
-  .icon-btn{
-    -webkit-tap-highlight-color:transparent;
-    width:38px; height:38px; display:grid; place-items:center;
-    border-radius:12px; border:1px solid #ffffff20; background:#0f1a33; color:#d9e6ff;
-    box-shadow:0 6px 18px rgba(0,0,0,.25); cursor:pointer;
-  }
-  .icon-btn svg{width:18px;height:18px;opacity:.95}
+    /* Ventana / Shell de app */
+    .shell{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .window{
+      width:min(920px,96vw);
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .titlebar{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.15)), #0d1216;
+    }
+    .titlegroup{display:flex;align-items:center;gap:12px}
+    .dots{display:flex;gap:8px}
+    .dot{width:12px;height:12px;border-radius:50%}
+    .dot.red{background:#ff5f56}
+    .dot.yellow{background:#ffbd2f}
+    .dot.green{background:#27c93f}
+    .appname{font-weight:800;letter-spacing:.3px}
+    .version{font-size:12px;color:var(--muted)}
 
-  /* MAIN */
-  main{flex:1; display:flex; align-items:center; justify-content:center; padding:22px 14px;}
-  .hero{
-    width:min(980px,100%); background:linear-gradient(180deg,#121e36 0,#0e1830 100%);
-    border:1px solid #ffffff14; border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:22px; margin-inline:auto; text-align:center;
-  }
-  .hero h1{margin:0 0 8px; font-size:clamp(22px,4.2vw,36px); line-height:1.15}
-  .hero p{margin:0; color:var(--muted)}
-  .cta{margin-top:18px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
-  .btn{
-    -webkit-tap-highlight-color:transparent;
-    display:inline-flex; align-items:center; justify-content:center; gap:10px;
-    padding:14px 18px; border-radius:14px; border:1px solid #ffffff14;
-    background:#0e1730; color:#e8f1ff; text-decoration:none; font-weight:700;
-    box-shadow:0 6px 18px rgba(0,0,0,.25); transition:.25s transform,.25s border-color;
-    min-width:230px;
-  }
-  .btn:hover{transform:translateY(-1px); border-color:#ffffff2a}
-  .btn .ic{width:20px;height:20px;opacity:.9}
-  .btn.android{background:linear-gradient(180deg,#10203a 0,#0a1426 100%)}
-  .btn.ios{background:linear-gradient(180deg,#13233f 0,#0b1428 100%)}
+    .content{padding:18px}
 
-  .grid{margin-top:18px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:left}
-  .card{padding:14px; background:var(--panel); border:1px solid #ffffff12; border-radius:14px}
-  .card h3{margin:0 0 6px; font-size:16px}
-  .badge{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #ffffff22; background:#0f1830; font-size:12px; color:#cfe1ff; margin-left:6px}
+    /* Tarjetas y elementos base */
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .title{
+      font-size:20px;font-weight:900;letter-spacing:.3px;margin:0 0 6px 0;color:#c7f5df;
+      text-shadow:0 1px 0 rgba(255,255,255,.04);
+    }
+    .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
 
-  footer{padding:14px; border-top:1px solid #ffffff12; color:#a8b6d4; text-align:center}
+    /* Form login */
+    .grid{display:grid;gap:12px}
+    .login-grid{grid-template-columns: 1fr 2fr auto}
+    @media (max-width: 740px){ .login-grid{grid-template-columns:1fr} }
+    select,input,button{
+      background:#0f1419;border:1px solid var(--border);color:var(--text);
+      border-radius:10px;padding:12px 14px;font-size:15px;outline:none;
+      transition:border-color .2s, box-shadow .2s, transform .05s;
+    }
+    select,input{width:100%}
+    button{cursor:pointer;font-weight:800}
+    .btn-primary{
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      color:#002312;border:1px solid rgba(25,224,123,.6);
+      box-shadow: 0 10px 28px rgba(25,224,123,.25), inset 0 -6px 12px rgba(0,0,0,.25);
+    }
+    .btn-primary:active{transform:translateY(1px)}
+    .btn-ghost{
+      background:transparent;border:1px solid var(--border);color:var(--muted)
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
 
-  /* MODALES — overlay fijo y sheet centrada que NO se mueve */
-  .overlay{
-    position:fixed; inset:0;
-    display:none; z-index:40;
-    background:rgba(8,12,24,.6);
-    backdrop-filter:blur(6px);
-    padding:16px;
-    overflow:hidden; /* el scroll es interno en .sheet */
-  }
-  .overlay.show{display:block}
+    /* Verificación */
+    .verify{
+      display:flex;align-items:center;gap:12px;justify-content:center;
+      padding:14px;border:1px dashed var(--border);border-radius:12px;background:#0b1116;
+      color:var(--muted)
+    }
+    .spinner{width:18px;height:18px;border:3px solid rgba(25,224,123,.25);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-  .sheet{
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%, -50%);
-    width:min(680px, calc(100% - 24px));
-    max-height:92svh;            /* altura visual estable en móvil */
-    overflow:auto;               /* scroll interno */
-    scrollbar-gutter:stable both-edges;
+    /* Progreso */
+    .progress-wrap{margin-top:10px}
+    .progress-container{
+      height:20px;background:#10161b;border:1px solid var(--border);border-radius:999px;overflow:hidden;
+    }
+    .progress-bar{
+      height:100%;width:0%;
+      background: linear-gradient(90deg, var(--accent), #6effbf);
+      box-shadow: 0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35);
+      transition:width .1s linear;
+    }
+    .pct{text-align:right;color:var(--muted);font-size:12px;margin-top:6px}
 
-    background:#0f1830; border:1px solid #ffffff18;
-    border-radius:18px; box-shadow:var(--shadow); padding:18px; margin:0;
-    overscroll-behavior:contain;
-  }
-  .sheet header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
-  .sheet h2{margin:0; font-size:18px}
-  .close{
-    text-decoration:none; color:#d7e6ff; padding:10px 14px; border-radius:12px;
-    border:1px solid #ffffff22; background:#0c1428; font-weight:700; cursor:pointer;
-  }
-  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-  .chip{
-    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
-    border:1px solid #ffffff22; background:#0d162e; font-size:13px; color:#cfe1ff;
-  }
-  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px #19b97a20}
-  .muted{color:var(--muted); font-size:14px}
+    /* Consola (solo monospace) */
+    .console{margin-top:14px}
+    .console h3{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
+    .log{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      background:#0a0f13;border:1px solid var(--border);border-radius:10px;
+      max-height:220px;overflow:auto;padding:10px;font-size:13px;line-height:1.45
+    }
+    .log .info{color:#b8f7db}
+    .log .warn{color:var(--warn)}
+    .log .error{color:var(--error)}
+    .log .ok{color:var(--ok)}
+    .console-actions{display:flex;justify-content:flex-end;margin-top:8px}
 
-  /* Progreso */
-  .progress{margin-top:12px; width:100%; height:14px; background:#0a1226; border:1px solid #ffffff18; border-radius:999px; overflow:hidden; position:relative}
-  .bar{position:absolute; inset:0 0 0 0; width:0%; background:linear-gradient(90deg,var(--acc),var(--acc-2)); box-shadow:0 0 18px #00c8ff44 inset}
-  .spark{
-    position:absolute; top:0; bottom:0; width:110px; transform:translateX(-110px);
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
-    mix-blend-mode:screen; pointer-events:none;
-  }
+    /* Resultados (botones/tiles) */
+    .results{margin-top:12px;display:none}
+    .grid-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+    .result{
+      background:linear-gradient(180deg,#0f1419,#0b1116);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;text-align:center;font-weight:800;letter-spacing:.2px;
+      box-shadow:var(--shadow);opacity:0;transform:translateY(6px) scale(.98);
+      transition:opacity .3s ease, transform .3s ease;
+    }
+    .result.show{opacity:1;transform:translateY(0) scale(1)}
+    .result .big{font-size:22px;color:#c9ffe5}
+    .result .lbl{font-size:12px;color:var(--muted)}
 
-  .stages{margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
-  .stage{font-size:12px; color:#cfe1ff; background:#0e1730; border:1px solid #ffffff14; padding:6px 8px; border-radius:999px; opacity:.6}
-  .stage.active{opacity:1; border-color:#7ed7ff; box-shadow:0 0 0 3px #1b396033}
+    .footer-actions{display:flex;gap:10px;justify-content:center;margin-top:12px}
 
-  /* Terminal: alto fijo, sin crecer a lo ancho y truncando líneas */
-  .terminal{
-    margin-top:12px; background:#0a1326; border:1px solid #ffffff12; border-radius:12px;
-    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    padding:10px; height:160px; overflow-y:auto; overflow-x:hidden;
-    color:#cfe1ff; text-align:left;
-    contain:layout style; /* evita que su layout afecte al contenedor */
-  }
-  .log-line{
-    display:block;
-    white-space:nowrap;
-    overflow:hidden;           /* oculta el exceso horizontal */
-    text-overflow:ellipsis;    /* añade … cuando se corta */
-    max-width:100%;
-  }
-  .ok{color:#7dffb2} .info{color:#cfe1ff} .warn{color:#ffd166}
+    .hidden{display:none !important}
 
-  /* Final: reserva espacio para no empujar el layout */
-  .done{
-    margin-top:14px;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    color:#aee9c9; font-weight:700;
-    min-height:32px;             /* altura constante */
-    visibility:hidden;           /* oculto pero ocupa espacio */
-  }
-  .done.show{visibility:visible}
+    /* --- Mini-flag en select --- */
+    .cc-wrap{ position:relative; }
+    .cc-wrap select{ padding-left:46px; } /* espacio para la banderita */
+    .flag{
+      position:absolute; top:50%; left:12px; transform:translateY(-50%);
+      width:22px; height:14px; border:1px solid var(--border); border-radius:3px;
+      box-shadow:0 1px 2px rgba(0,0,0,.25); display:inline-block; overflow:hidden;
+      background:#0f1419;
+    }
 
-  .actions{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
-  .secondary{
-    text-decoration:none; color:#d7e6ff; padding:10px 14px; border-radius:12px;
-    border:1px solid #ffffff22; background:#0c1428; font-weight:700; cursor:pointer;
-  }
+    /* --- Chips de subetapas --- */
+    .stages{
+      margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;
+    }
+    .chip{
+      font-size:12px; padding:6px 10px; border:1px solid var(--border);
+      border-radius:999px; color:var(--muted); background:#0f1419;
+      transition:all .2s ease; opacity:.75;
+    }
+    .chip.active{
+      color:#002312; background:linear-gradient(180deg, var(--accent), var(--accent-2));
+      border-color:rgba(25,224,123,.6); box-shadow:0 0 0 2px rgba(25,224,123,.15) inset;
+      opacity:1;
+    }
+    .chip.done{
+      color:#aeeecf; background:#0f1a14; border-color:#214b35; opacity:1;
+    }
 
-  .confetti{position:absolute; inset:0; pointer-events:none; display:none}
-  .info-list{display:grid; gap:10px}
-  .info-card{background:#0d152b; border:1px solid #ffffff14; border-radius:12px; padding:12px}
-  .info-card h3{margin:0 0 6px; font-size:15px}
+    /* --- Barra de parámetros (decorativa) --- */
+    .parambar{
+      margin:8px 0 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:2px;
+    }
+    .pill{
+      pointer-events:none; /* no interactúa */
+      border:1px solid var(--border);
+      background:#0f1419;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      padding:6px 12px;
+      border-radius:999px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+      opacity:.9;
+    }
+    .pill.on{
+      color:#002312;
+      background:linear-gradient(180deg, var(--accent), var(--accent-2));
+      border-color:rgba(25,224,123,.6);
+      box-shadow:0 6px 16px rgba(25,224,123,.18), inset 0 -4px 8px rgba(0,0,0,.25);
+    }
+    @media (max-width: 420px){
+      .pill{ font-size:11px; padding:5px 10px; }
+    }
 
-  @media (max-width:820px){
-    .grid{grid-template-columns:1fr; text-align:center}
-    .btn{flex:1; min-width:unset; width:100%}
-  }
-  @media (max-width:480px){
-    .sheet{padding:14px}
-    .terminal{height:120px}
-    .stages{gap:6px}
-    .stage{font-size:11px; padding:5px 7px}
-    .actions{gap:8px}
-    .actions .secondary{flex:1}
-  }
-</style>
+    /* --- Pulso suave al 100% --- */
+    .progress-bar.pulse{
+      animation:pulseGlow 1.6s ease-out 1;
+    }
+    @keyframes pulseGlow{
+      0%   { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
+      35%  { box-shadow:0 0 24px rgba(25,224,123,.65) inset, 0 0 18px rgba(25,224,123,.55); }
+      100% { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
+    }
+
+    /* --- Consola más alta en móviles --- */
+    @media (max-width: 640px){
+      .console .log{
+        max-height: 420px; /* antes 220px en mobile */
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <span>WhatsApp Clone</span>
-    </div>
-    <button class="icon-btn" id="infoBtn" aria-label="Información del programa">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 14h-2v-6h2v6zm-1-8.8a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-      </svg>
-    </button>
-  </header>
-
-  <main>
-    <section class="hero">
-      <h1>WhatsApp Clone para Android y iOS</h1>
-      <p>Seleccione el tipo de dispositivo y espere mientras avanza la barra de proceso.</p>
-
-      <div class="cta" role="group" aria-label="Elegir plataforma">
-        <a href="#" class="btn android" id="btnAndroid">
-          <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <rect x="4" y="7" width="16" height="10" rx="2"></rect>
-            <circle cx="9" cy="12" r="1.2"></circle>
-            <circle cx="15" cy="12" r="1.2"></circle>
-          </svg>
-          Descargar para Android
-        </a>
-        <a href="#" class="btn ios" id="btnIOS">
-          <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <rect x="7" y="3" width="10" height="18" rx="2"></rect>
-            <rect x="10" y="5" width="4" height="1.2" rx="0.6"></rect>
-          </svg>
-          Descargar para iOS
-        </a>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h3>Proceso controlado <span class="badge">Online</span></h3>
-          <p class="muted">Observa el progreso de instalación desde tu dispositivo.</p>
+  <div class="shell">
+    <div class="window">
+      <div class="titlebar">
+        <div class="titlegroup">
+          <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div>
+            <div class="appname">WhatsHack V3 Pro</div>
+            <div class="version">Versión 1.1.0</div>
+          </div>
         </div>
-        <div class="card">
-          <h3>Sin interrupciones</h3>
-          <p class="muted">Ejecución silenciosa y estable durante todo el proceso.</p>
-        </div>
-        <div class="card">
-          <h3>Preparación</h3>
-          <p class="muted">Simulación de carga y verificación de componentes.</p>
-        </div>
+        <div class="version">Estado • Activo</div>
       </div>
-    </section>
-  </main>
 
-  <footer>Investigador Privado © 2025 — WhatsApp Clone</footer>
-</div>
+      <div class="content">
+        <!-- LOGIN -->
+        <section id="screen-login" class="card">
+          <h2 class="title">Ingrese el número de WhatsApp</h2>
+          <p class="subtitle">Seleccion el código de país y digite el número</p>
+          <div class="grid login-grid" style="margin-top:12px">
+            <!-- Mini-flag + select -->
+            <div class="cc-wrap">
+              <span id="flagIcon" class="flag" aria-hidden="true"></span>
+              <select id="cc">
+                <option value="+593">+593 (Ecuador)</option>
+                <option value="+57">+57 (Colombia)</option>
+                <option value="+51">+51 (Perú)</option>
+                <option value="+52">+52 (México)</option>
+                <option value="+54">+54 (Argentina)</option>
+                <option value="+34">+34 (España)</option>
+                <option value="+1">+1 (EE. UU.)</option>
+              </select>
+            </div>
+            <!-- Solo select (sin iconos) -->
+            <select id="cc">
+              <option value="+593">+593 (Ecuador)</option>
+              <option value="+57">+57 (Colombia)</option>
+              <option value="+51">+51 (Perú)</option>
+              <option value="+52">+52 (México)</option>
+              <option value="+54">+54 (Argentina)</option>
+              <option value="+34">+34 (España)</option>
+              <option value="+1">+1 (EE. UU.)</option>
+            </select>
+            <input id="num" type="text" placeholder="9XX XXX XXX" inputmode="numeric" maxlength="15" />
+            <button id="btnStart" class="btn-primary">Hackear</button>
+          </div>
+        </section>
 
-<!-- MODAL DESCARGA -->
-<div class="overlay" id="dlModal" aria-modal="true" role="dialog">
-  <div class="sheet" aria-busy="true">
-    <header>
-      <h2 id="dlTitle">Descargando aplicación</h2>
-      <button class="close" id="closeDl">Cerrar</button>
-    </header>
+        <!-- VERIFICACIÓN -->
+        <section id="screen-verify" class="card hidden">
+          <h2 class="title">Validando datos…</h2>
+          <div class="verify"><div class="spinner"></div><span>Verificando cuenta de WhatsApp</span></div>
+          <p id="verify-target" class="subtitle" style="text-align:center;margin-top:10px"></p>
+        </section>
 
-    <div class="row" style="justify-content:center">
-      <span class="chip"><span class="dot"></span> Plataforma: <strong id="dlPlatform">Android</strong></span>
-      <span class="muted">Por favor espere…</span>
-    </div>
+        <!-- PROGRESO -->
+        <section id="screen-progress" class="card hidden">
+          <h2 class="title">Hacking: <span id="target"></span></h2>
 
-    <div class="stages" aria-label="Etapas">
-      <span class="stage" id="st1">Conectando</span>
-      <span class="stage" id="st2">Validando</span>
-      <span class="stage" id="st3">Descargando</span>
-      <span class="stage" id="st4">Completado</span>
-    </div>
+          <!-- Barra de parámetros (decorativa) -->
+          <div class="parambar" role="toolbar" aria-label="Parámetros de sesión (visual)">
+            <button class="pill on" aria-pressed="true" disabled>Interceptación</button>
+            <button class="pill on" aria-pressed="true" disabled>TLS activo</button>
+            <button class="pill on" aria-pressed="true" disabled>Modo sigiloso</button>
+            <button class="pill on" aria-pressed="true" disabled>Proxy</button>
+            <button class="pill on" aria-pressed="true" disabled>Cifrado E2E</button>
+            <button class="pill on" aria-pressed="true" disabled>Reconstrucción</button>
+            <button class="pill on" aria-pressed="true" disabled>Autosave</button>
+          </div>
 
-    <div class="progress" aria-label="Progreso de descarga">
-      <div class="bar" id="bar"></div>
-      <div class="spark" id="spark"></div>
-      <canvas class="confetti" id="confetti"></canvas>
-    </div>
+          <div class="progress-wrap">
+            <div class="progress-container"><div class="progress-bar" id="bar"></div></div>
+            <div class="pct" id="pct">0%</div>
+          </div>
 
-    <div class="terminal" id="terminal" aria-live="polite" aria-atomic="false"></div>
+          <!-- Chips de subetapas -->
+          <div class="stages" id="stages">
+            <span class="chip" data-stage="init">Inicializando</span>
+            <span class="chip" data-stage="conn">Conectando</span>
+            <span class="chip" data-stage="anlz">Analizando</span>
+            <span class="chip" data-stage="dec">Descifrando</span>
+            <span class="chip" data-stage="val">Validando</span>
+            <span class="chip" data-stage="fin">Finalizando</span>
+          </div>
 
-    <div class="done" id="doneRow">
-      <span class="check">✔</span>
-      <span>Descarga completada</span>
-    </div>
+          <div class="console">
+            <h3>Consola</h3>
+            <div class="log" id="log"></div>
+            <div class="console-actions">
+              <button id="copyLogs" class="btn-ghost">Copiar logs</button>
+            </div>
+          </div>
 
-    <div class="actions">
-      <button class="secondary" id="restart">Reiniciar</button>
-      <button class="secondary" id="cancelBottom">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL INFO -->
-<div class="overlay" id="infoModal" aria-modal="true" role="dialog">
-  <div class="sheet">
-    <header>
-      <h2>Información del servicio</h2>
-      <button class="close" id="closeInfo">Cerrar</button>
-    </header>
-    <div class="info-list">
-      <div class="info-card">
-        <h3>¿Quiénes somos?</h3>
-        <p class="muted">Equipo especializado en análisis digital y recuperación de información con fines investigativos y de seguridad.</p>
-      </div>
-      <div class="info-card">
-        <h3>Tiempo de servicio</h3>
-        <p class="muted">Una vez conectado, el servicio se mantiene activo hasta que el titular cambie de número o se desactive la línea.</p>
-      </div>
-      <div class="info-card">
-        <h3>Información legal</h3>
-        <p class="muted">Este sitio es una demostración visual. No realizamos acciones no autorizadas ni asumimos responsabilidad por decisiones, daños o perjuicios derivados del uso de la información mostrada.</p>
+          <div class="results" id="results">
+            <div class="grid-results" id="grid"></div>
+            <div class="footer-actions">
+              <button id="btnReset" class="btn-ghost">Reiniciar</button>
+              <button id="btnDetails" class="btn-primary">Detalles</button>
+              <button id="btnExit" class="btn-ghost">Salir</button>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // --- Refs ---
-  const btnAndroid = document.getElementById('btnAndroid');
-  const btnIOS = document.getElementById('btnIOS');
-  const dlModal = document.getElementById('dlModal');
-  const infoModal = document.getElementById('infoModal');
-  const infoBtn = document.getElementById('infoBtn');
+  <!-- MODAL DETALLES -->
+  <div id="popup" class="hidden" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);z-index:50">
+    <div style="width:min(720px,92vw);background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 style="margin:0;color:#c7f5df">🔐 Resultados Avanzados</h3>
+        <button id="closePopup" class="btn-ghost">[X] Cerrar</button>
+      </div>
+      <pre id="advText" style="margin:0;white-space:pre-wrap;color:#c9ffe5;background:#0a0f13;border:1px solid var(--border);border-radius:12px;padding:10px;max-height:60vh;overflow:auto">
+Códigos detectados:
+ - QR WA Enlace activo: true
+ - Puerto activo: 5222
+ - Host principal: chat.whatsapp.net
+ - Proxy: 10.87.1.66:443
+ - API Bridge: api.whats.sim.wsp/v3
+ - Mensajes cifrados: 1291
+ - Fragmentos recuperados: 87%
+ - Estado de sesión: sincronizada
+ - Último backup: 14/03/2025 02:22
+ - Dirección IP origen: 192.168.33.201
+ - Región: South America / Ecuador
+ - Red interceptada: WhatsApp LTE EC [Cod. 7xA3]
+      </pre>
+    </div>
+  </div>
 
-  const dlPlatform = document.getElementById('dlPlatform');
-  const dlTitle = document.getElementById('dlTitle');
-  const closeDl = document.getElementById('closeDl');
+  <script>
+    // Helpers
+    const $ = s => document.querySelector(s);
+    const nowTs = () => new Date().toLocaleTimeString();
 
-  const bar = document.getElementById('bar');
-  const spark = document.getElementById('spark');
-  const terminal = document.getElementById('terminal');
-  const doneRow = document.getElementById('doneRow');
-  const restart = document.getElementById('restart');
-  const cancelBottom = document.getElementById('cancelBottom');
+    // Screens
+    const sLogin = $('#screen-login');
+    const sVerify = $('#screen-verify');
+    const sProg  = $('#screen-progress');
 
-  // --- Estado ---
-  let platform = 'Android';
-  const DUR_MS = 600000;        // 10 min
-  const MAX_LOGS = 120;         // límite de líneas visibles
-  const MAX_CHARS = 90;         // límite de caracteres por línea
-  let startAt = 0, pausedAt = 0, pausedAccum = 0;
-  let rafId = null, logsTimer = null, sparkTimer = null;
-  let isRunning = false, isPaused = false;
+    // Login
+    const ccEl = $('#cc');
+    const numEl = $('#num');
+    const btnStart = $('#btnStart');
 
-  const files = [
-    'com.whatsapp.core_3.0.21.apk','stickers_whats_pack05.pkg','emojis_dynamic_v2.pkg',
-    'wa_backup_chat_2025-09-11.enc','voice_notes_decoder.mod','status_renderer_addon.pkg',
-    'call_engine_codec_opus.lib','themes_dark_mode_v4.pkg','stickers_whats_pack07.pkg',
-    'wa_db_schema_migrate.sql','com.whatsapp.performance.patch','wa_contact_sync.service',
-    'wa_media_optimizer.pkg','wa_groups_boost.module','system_patch.pkg',
-    'data_01.apk','data_02.apk','wa_push_enabler.mod'
-  ];
+    // Verify
+    const verifyTarget = $('#verify-target');
 
-  const stages = [
-    {el: document.getElementById('st1'), at: 25},
-    {el: document.getElementById('st2'), at: 50},
-    {el: document.getElementById('st3'), at: 75},
-    {el: document.getElementById('st4'), at: 100},
-  ];
-  function setStageActive(pct){
-    stages.forEach(s => s.el.classList.toggle('active', pct >= s.at));
-  }
+    // Progress
+    const targetEl = $('#target');
+    const barEl = $('#bar');
+    const pctEl = $('#pct');
+    const logEl = $('#log');
+    const copyBtn = $('#copyLogs');
 
-  // Bloqueo de scroll del fondo
-  function lockBodyScroll(){ document.body.style.overflow = 'hidden'; }
-  function unlockBodyScroll(){ document.body.style.overflow = ''; }
+    // Results
+    const resultsWrap = $('#results');
+    const grid = $('#grid');
+    const btnReset = $('#btnReset');
+    const btnDetails = $('#btnDetails');
+    const btnExit = $('#btnExit');
 
-  function appendLog(line, cls='info'){
-    // Trunca el texto para que nunca ensanche la tarjeta
-    let txt = line;
-    if (txt.length > MAX_CHARS) txt = txt.slice(0, MAX_CHARS) + '…';
+    // Modal
+    const popup = $('#popup');
+    const closePopup = $('#closePopup');
 
-    const div = document.createElement('div');
-    div.className = 'log-line ' + cls;
-    div.textContent = txt;
-    terminal.appendChild(div);
+    let logBuffer = [];
+    const show = el => el.classList.remove('hidden');
+    const hide = el => el.classList.add('hidden');
+    const appendLog = (type,msg)=>{
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${nowTs()}] ${msg}`;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+      logBuffer.push(line.textContent);
+    };
+    const validNumber = n => /^\d{6,15}$/.test(n.replace(/\s+/g,''));
+    const rint = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 
-    // Mantiene tope de líneas
-    while (terminal.childElementCount > MAX_LOGS) {
-      terminal.removeChild(terminal.firstChild);
-    }
-    // Scroll al final
-    terminal.scrollTop = terminal.scrollHeight;
-  }
+    // Start
+    btnStart.addEventListener('click', ()=>{
+      const cc = ccEl.value.trim();
+      const n  = numEl.value.trim().replace(/\s+/g,'');
+      if(!validNumber(n)){ alert('Ingresa un número válido (6–15 dígitos).'); return; }
 
-  function startLogs(){
-    clearInterval(logsTimer);
-    logsTimer = setInterval(()=>{
-      const f = files[Math.floor(Math.random()*files.length)];
-      const prefixes = [
-        'Descargando paquete: ',
-        'Validando firma: ',
-        'Aplicando parches: ',
-        'Verificando integridad: ',
-        'Preparando instalación: ',
-        'Sincronizando componentes: ',
-        'Optimizando recursos: ',
-      ];
-      const p = prefixes[Math.floor(Math.random()*prefixes.length)];
-      const cls = Math.random()<0.1 ? 'warn' : 'info';
-      appendLog(p + f + (cls==='warn'?' (reintento)…':''), cls);
-    }, 160); // ritmo moderado para estabilidad visual
-  }
-  function stopLogs(){ clearInterval(logsTimer); logsTimer = null; }
-
-  function startSpark(){
-    let x = -110;
-    clearInterval(sparkTimer);
-    spark.style.transform = 'translateX(-110px)';
-    sparkTimer = setInterval(()=>{
-      x += 12;
-      spark.style.transform = 'translateX(' + x + 'px)';
-      const w = document.querySelector('.progress').clientWidth;
-      if(x > w) x = -110;
-    }, 50);
-  }
-  function stopSpark(){ clearInterval(sparkTimer); sparkTimer = null; }
-
-  function fireConfetti(){
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width = canvas.offsetWidth;
-    const h = canvas.height = canvas.offsetHeight;
-    canvas.style.display = 'block';
-    const dots = 60, parts = [];
-    for(let i=0;i<dots;i++){
-      parts.push({
-        x: Math.random()*w, y: h+10, r: 2+Math.random()*3,
-        vx: (Math.random()-.5)*1.2, vy: -1.5 - Math.random()*2.5,
-        color: ['#7ed7ff','#33b9ff','#23d18b','#ffd166'][Math.floor(Math.random()*4)]
-      });
-    }
-    let frames = 0;
-    (function anim(){
-      frames++; ctx.clearRect(0,0,w,h);
-      parts.forEach(p=>{
-        p.x += p.vx; p.y += p.vy; p.vy += 0.03;
-        ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-      });
-      if(frames<120) requestAnimationFrame(anim);
-      else canvas.style.display = 'none';
-    })();
-  }
-
-  function loop(now){
-    if (!isRunning) return;
-    const elapsed = now - startAt - pausedAccum;
-    let pct = Math.max(0, Math.min(100, (elapsed / DUR_MS) * 100));
-    bar.style.width = pct.toFixed(2) + '%';
-    setStageActive(pct);
-
-    if (pct >= 100){
-      isRunning = false;
-      stopLogs(); stopSpark();
-      appendLog('Instalación finalizada.', 'ok');
-      doneRow.classList.add('show');
-      document.querySelector('#dlModal .sheet').setAttribute('aria-busy','false');
-      fireConfetti();
-      return;
-    }
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function start(platformName){
-    platform = platformName;
-    dlPlatform.textContent = platform;
-    dlTitle.textContent = `Descargando aplicación — ${platform}`;
-    dlModal.classList.add('show');
-    lockBodyScroll();
-
-    // Reset visual
-    terminal.innerHTML = '';
-    doneRow.classList.remove('show');
-    bar.style.width = '0%';
-    setStageActive(0);
-    document.querySelector('#dlModal .sheet').setAttribute('aria-busy','true');
-
-    // Reset temporales
-    if (rafId) cancelAnimationFrame(rafId);
-    stopLogs(); stopSpark();
-
-    // Iniciar
-    startAt = performance.now();
-    pausedAt = 0;
-    pausedAccum = 0;
-    isRunning = true;
-    isPaused = false;
-
-    startLogs();
-    startSpark();
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function reset(){
-    if (rafId) cancelAnimationFrame(rafId);
-    stopLogs(); stopSpark();
-
-    // reset visual
-    terminal.innerHTML='';
-    doneRow.classList.remove('show');
-    bar.style.width='0%';
-    setStageActive(0);
-    document.querySelector('#dlModal .sheet').setAttribute('aria-busy','true');
-
-    // reset tiempos
-    startAt = performance.now();
-    pausedAt = 0;
-    pausedAccum = 0;
-    isRunning = true;
-    isPaused = false;
-
-    startLogs();
-    startSpark();
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function cancelModal(){
-    if (rafId) cancelAnimationFrame(rafId);
-    stopLogs(); stopSpark();
-    isRunning = false;
-    dlModal.classList.remove('show');
-    unlockBodyScroll();
-    document.querySelector('#dlModal .sheet').setAttribute('aria-busy','false');
-  }
-
-  // Pausa/Resume por visibilidad/foco
-  function pauseSim(){
-    if (!isRunning || isPaused) return;
-    isPaused = true;
-    pausedAt = performance.now();
-    if (rafId) cancelAnimationFrame(rafId);
-    stopLogs(); stopSpark();
-  }
-  function resumeSim(){
-    if (!isRunning || !isPaused) return;
-    isPaused = false;
-    const now = performance.now();
-    pausedAccum += (now - pausedAt);
-    pausedAt = 0;
-    startLogs(); startSpark();
-    rafId = requestAnimationFrame(loop);
-  }
-  document.addEventListener('visibilitychange', () => {
-    if (!dlModal.classList.contains('show')) return;
-    if (document.hidden) pauseSim(); else resumeSim();
-  });
-  window.addEventListener('blur', () => {
-    if (!dlModal.classList.contains('show')) return;
-    pauseSim();
-  });
-  window.addEventListener('focus', () => {
-    if (!dlModal.classList.contains('show')) return;
-    resumeSim();
-  });
-
-  // Listeners principales
-  btnAndroid.addEventListener('click', e=>{e.preventDefault(); start('Android');});
-  btnIOS.addEventListener('click',     e=>{e.preventDefault(); start('iOS');});
-  closeDl.addEventListener('click', cancelModal);
-  cancelBottom.addEventListener('click', cancelModal);
-  restart.addEventListener('click', reset);
-
-  // Info modal
-  infoBtn.addEventListener('click', ()=>{
-    infoModal.classList.add('show');
-    lockBodyScroll();
-  });
-  document.getElementById('closeInfo').addEventListener('click', ()=>{
-    infoModal.classList.remove('show');
-    unlockBodyScroll();
-  });
-
-  // Cerrar modales tocando fuera
-  [dlModal, infoModal].forEach(ov=>{
-    ov.addEventListener('click', (e)=>{
-      if(e.target === ov){
-        ov.classList.remove('show');
-        unlockBodyScroll();
-      }
+      hide(sLogin);
+      show(sVerify);
+      verifyTarget.textContent = `Objetivo: ${cc} ${n}`;
+      setTimeout(()=> startProgress(`${cc} ${n}`), 1600);
     });
-  });
-});
-</script>
+
+    function startProgress(target){
+      hide(sVerify);
+      show(sProg);
+      targetEl.textContent = target;
+
+      // Reset
+      logEl.textContent = '';
+      logBuffer = [];
+      grid.innerHTML = '';
+      resultsWrap.style.display = 'none';
+      barEl.style.width = '0%';
+      pctEl.textContent = '0%';
+
+      // 30s -> 300 pasos x 100ms
+      let step=0, steps=300, interval=100;
+
+      // Logs simples con algún error (continúa)
+      const plannedLogs = [
+        {t:15,  type:'info', msg:'Inicializando módulos…'},
+        {t:30,  type:'info', msg:'Conectando al servidor…'},
+        {t:45,  type:'warn', msg:'Latencia elevada, ajustando…'},
+        {t:70,  type:'info', msg:'Sesión establecida. Recibiendo metadatos…'},
+        {t:95,  type:'error',msg:'Checksum inconsistente. Reintentando…'},
+        {t:110, type:'info', msg:'Reintento exitoso. Continuando…'},
+        {t:145, type:'info', msg:'Analizando paquetes…'},
+        {t:170, type:'info', msg:'Reconstruyendo fragmentos…'},
+        {t:200, type:'info', msg:'Descifrando bloques…'},
+        {t:230, type:'warn', msg:'Pérdida de paquetes 2%. Compensando…'},
+        {t:260, type:'info', msg:'Validando integridad…'},
+        {t:290, type:'ok',   msg:'Proceso finalizado. Preparando resultados…'}
+      ];
+
+      // 8 métricas (con 🎤 Notas de voz en medio)
+      const metrics = [
+        { lbl:'💬 Número de chats',           val: rint(120,310) },
+        { lbl:'📤 Enviados (foto/video)',     val: rint(210,260) },
+        { lbl:'📥 Recibidos (foto/video)',    val: rint(300,350) },
+        { lbl:'🎤 Notas de voz',              val: rint(80,420)  },
+        { lbl:'👥 Contactos',                 val: rint(150,220) },
+        { lbl:'📲 Llamadas entrantes',        val: rint(100,170) },
+        { lbl:'📞 Llamadas salientes',        val: rint(100,143) },
+        { lbl:'🗑️ Conversaciones eliminadas', val: rint(10,14)   }
+      ];
+
+      // Puntos de revelado (8)
+      const revealPerc = [12,25,37,50,62,75,87,99];
+      const revealTicks = revealPerc.map(p => Math.round(p/100*steps));
+      const revealed = new Set();
+
+      const timer = setInterval(()=>{
+        step++;
+        const pct = Math.min(100, Math.floor(step/steps*100));
+        barEl.style.width = pct + '%';
+        pctEl.textContent = pct + '%';
+
+        plannedLogs.forEach(l => { if(l.t === step) appendLog(l.type,l.msg); });
+
+        revealTicks.forEach((tick, i)=>{
+          if(step === tick && !revealed.has(i)){
+            revealed.add(i);
+            revealResult(i);
+          }
+        });
+
+        if(step >= steps){
+          clearInterval(timer);
+          appendLog('ok','Resultados listos.');
+          resultsWrap.style.display = 'block';
+        }
+      }, interval);
+
+      function revealResult(i){
+        const m = metrics[i]; if(!m) return;
+        const btn = document.createElement('button');
+        btn.className = 'result';
+        btn.type = 'button';
+        btn.innerHTML = `<div class="big">${m.val.toLocaleString('es')}</div><div class="lbl">${m.lbl}</div>`;
+        grid.appendChild(btn);
+        setTimeout(()=> btn.classList.add('show'), 40);
+      }
+    }
+
+    // Copiar logs
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(logBuffer.join('\n'));
+        appendLog('ok','Consola copiada al portapapeles.');
+      }catch{ appendLog('error','No se pudo copiar al portapapeles.'); }
+    });
+
+    // Acciones finales
+    btnReset.addEventListener('click', ()=>{
+      hide(sProg); hide(sVerify); show(sLogin);
+      numEl.value=''; logEl.textContent=''; grid.innerHTML=''; resultsWrap.style.display='none';
+    });
+    btnDetails.addEventListener('click', ()=> popup.classList.remove('hidden'));
+    btnExit.addEventListener('click', ()=> location.reload());
+
+    // Modal
+    closePopup.addEventListener('click', ()=> popup.classList.add('hidden'));
+
+    // UX: solo dígitos
+    numEl.addEventListener('input', ()=>{ numEl.value = numEl.value.replace(/[^\d]/g,'').slice(0,15); });
+
+    /* =========================
+       FLAGS + PLACEHOLDERS (UI)
+       PLACEHOLDERS DINÁMICOS (UI)
+       ========================= */
+    const CC_TO_COUNTRY = {
+      '+593':'EC', '+57':'CO', '+51':'PE', '+52':'MX', '+54':'AR', '+34':'ES', '+1':'US'
+    };
+    const CC_TO_PLACEHOLDER = {
+      '+593':'9XX XXX XXX',
+      '+57':'3XX XXX XXXX',
+      '+51':'9XX XXX XXX',
+      '+52':'55 XX XX XXXX',
+      '+54':'11 XXXX XXXX',
+      '+34':'6XX XX XX XX',
+      '+1':'(XXX) XXX-XXXX'
+    };
+    function getFlagSVG(country){
+      const svg = {
+        EC: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="22" height="5" y="0" fill="#FCD116"/>
+               <rect width="22" height="4" y="5" fill="#003893"/>
+               <rect width="22" height="5" y="9" fill="#CE1126"/>
+             </svg>`,
+        CO: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="22" height="7" y="0" fill="#FCD116"/>
+               <rect width="22" height="3.5" y="7" fill="#003893"/>
+               <rect width="22" height="3.5" y="10.5" fill="#CE1126"/>
+             </svg>`,
+        PE: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="7.33" height="14" x="0" fill="#D91023"/>
+               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
+               <rect width="7.34" height="14" x="14.66" fill="#D91023"/>
+             </svg>`,
+        MX: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="7.33" height="14" x="0" fill="#006847"/>
+               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
+               <rect width="7.34" height="14" x="14.66" fill="#CE1126"/>
+             </svg>`,
+        AR: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="22" height="4.66" y="0" fill="#74ACDF"/>
+               <rect width="22" height="4.66" y="4.66" fill="#FFFFFF"/>
+               <rect width="22" height="4.68" y="9.32" fill="#74ACDF"/>
+             </svg>`,
+        ES: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="22" height="3.5" y="0" fill="#AA151B"/>
+               <rect width="22" height="7" y="3.5" fill="#F1BF00"/>
+               <rect width="22" height="3.5" y="10.5" fill="#AA151B"/>
+             </svg>`,
+        US: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
+               <rect width="22" height="14" fill="#B22234"/>
+               <rect y="2" width="22" height="2" fill="#FFF"/>
+               <rect y="6" width="22" height="2" fill="#FFF"/>
+               <rect y="10" width="22" height="2" fill="#FFF"/>
+               <rect width="9" height="7" fill="#3C3B6E"/>
+             </svg>`
+      };
+      return svg[country] || svg.ES;
+    }
+    function updateFlagAndPlaceholder(){
+    function updatePlaceholder(){
+      const cc = ccEl.value;
+      const country = CC_TO_COUNTRY[cc] || 'ES';
+      const flagHolder = document.getElementById('flagIcon');
+      if(flagHolder) flagHolder.innerHTML = getFlagSVG(country);
+      numEl.placeholder = CC_TO_PLACEHOLDER[cc] || '9XX XXX XXX';
+    }
+    ccEl.addEventListener('change', updateFlagAndPlaceholder);
+    updateFlagAndPlaceholder();
+    ccEl.addEventListener('change', updatePlaceholder);
+    updatePlaceholder();
+
+    /* =========================
+       SUBETAPAS + PULSO 100% (UI)
+       ========================= */
+    // Guardamos referencia de la función original y “enganchamos” UI sin modificar la lógica interna
+    const __originalStartProgress = startProgress;
+    startProgress = function(target){
+      const ret = __originalStartProgress.call(this, target);
+
+      const stagesEl = document.getElementById('stages');
+      const chips = stagesEl ? Array.from(stagesEl.querySelectorAll('.chip')) : [];
+      const bar = document.getElementById('bar');
+      const pctNode = document.getElementById('pct');
+
+      // Hitos alineados a tus plannedLogs
+      const stageMarks = [15, 30, 145, 200, 260, 290];
+      let pulseDone = false;
+
+      const poll = setInterval(()=>{
+        if(!pctNode) return;
+        const pct = parseInt(pctNode.textContent.replace('%','')) || 0;
+
+        // Aproximamos step a partir del % (tu lógica real sigue intacta)
+        const approxStep = Math.round((pct/100) * 300);
+
+        // Actualiza chips (done/active)
+        stageMarks.forEach((mark, idx)=>{
+          if(!chips[idx]) return;
+          // reset de estado
+          chips[idx].classList.remove('active','done');
+          // marcar previos como done
+          chips.forEach((c,i)=>{ if(i<idx && approxStep >= mark) c.classList.add('done'); });
+          // marcar activo el más cercano alcanzado
+          if(approxStep >= mark) chips[idx].classList.add('active');
+        });
+
+        // pulso al 100%
+        if(pct >= 100 && !pulseDone){
+          pulseDone = true;
+          if(bar){
+            bar.classList.add('pulse');
+            setTimeout(()=> bar.classList.remove('pulse'), 1700);
+          }
+          clearInterval(poll);
+        }
+      }, 120);
+
+      return ret;
+    };
+  </script>
 </body>
 </html>
