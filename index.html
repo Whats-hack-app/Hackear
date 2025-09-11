@@ -32,17 +32,28 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
     }
 
-    /* Ventana / Shell de app */
-    .shell{min-height:100vh;display:grid;place-items:center;padding:24px}
+    /* Shell centrada con altura de viewport segura en móvil */
+    .shell{
+      min-height:100svh;            /* svh = viewport estable en móviles */
+      display:grid; place-items:center;
+      padding:24px;
+    }
+
+    /* Ventana: flex-col para reservar barra de título y centrar contenido */
     .window{
       width:min(920px,96vw);
+      max-height:96svh;
       background:var(--surface);
       border:1px solid var(--border);
       border-radius:20px;
       box-shadow: var(--shadow);
       overflow:hidden;
+
+      display:flex;                 /* << nuevo */
+      flex-direction:column;        /* << nuevo */
     }
     .titlebar{
+      flex:0 0 auto;                /* << explícito */
       display:flex;align-items:center;justify-content:space-between;
       padding:10px 14px;border-bottom:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.15)), #0d1216;
@@ -56,15 +67,25 @@
     .appname{font-weight:800;letter-spacing:.3px}
     .version{font-size:12px;color:var(--muted)}
 
-    .content{padding:18px}
+    /* Contenido centrado vertical y horizontalmente, con scroll interno si hace falta */
+    .content{
+      flex:1 1 auto;                /* ocupa el alto restante */
+      padding:18px;
+      display:grid;                 /* << centra la tarjeta visible */
+      place-items:center;           /* << centra en ambos ejes */
+      overflow:auto;                /* << scroll interno si es necesario */
+      scrollbar-gutter:stable both-edges; /* menos “saltos” cuando aparece scroll */
+    }
 
-    /* Tarjetas y elementos base */
+    /* Tarjetas */
     .card{
+      width:min(860px, 100%);       /* ancho amigable para móvil */
       background: var(--card);
       border:1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding:18px;
+      margin:0 auto;                /* por si el grid cae en single-column */
     }
     .title{
       font-size:20px;font-weight:900;letter-spacing:.3px;margin:0 0 6px 0;color:#c7f5df;
@@ -157,6 +178,7 @@
       width:22px; height:14px; border:1px solid var(--border); border-radius:3px;
       box-shadow:0 1px 2px rgba(0,0,0,.25); display:inline-block; overflow:hidden;
       background:#0f1419;
+      line-height:0;
     }
 
     /* --- Chips de subetapas --- */
@@ -186,6 +208,17 @@
       35%  { box-shadow:0 0 24px rgba(25,224,123,.65) inset, 0 0 18px rgba(25,224,123,.55); }
       100% { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
     }
+
+    /* Tuning móvil: ventana a ancho completo y radios reducidos para ganar espacio */
+    @media (max-width:740px){
+      .shell{ padding:12px; }
+      .window{
+        width:100vw; max-height:100svh;
+        border-radius:14px;  /* puedes poner 0 si la quieres full-bleed */
+      }
+      .content{ padding:14px; }
+      .card{ width:100%; }
+    }
   </style>
 </head>
 <body>
@@ -211,7 +244,7 @@
             <!-- Mini-flag + select -->
             <div class="cc-wrap">
               <span id="flagIcon" class="flag" aria-hidden="true"></span>
-              <select id="cc">
+              <select id="cc" aria-label="Código de país">
                 <option value="+593">+593 (Ecuador)</option>
                 <option value="+57">+57 (Colombia)</option>
                 <option value="+51">+51 (Perú)</option>
@@ -392,7 +425,7 @@ Códigos detectados:
         {t:290, type:'ok',   msg:'Proceso finalizado. Preparando resultados…'}
       ];
 
-      // 8 métricas (con 🎤 Notas de voz en medio)
+      // 8 métricas
       const metrics = [
         { lbl:'💬 Número de chats',           val: rint(120,310) },
         { lbl:'📤 Enviados (foto/video)',     val: rint(210,260) },
@@ -481,43 +514,13 @@ Códigos detectados:
     };
     function getFlagSVG(country){
       const svg = {
-        EC: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="5" y="0" fill="#FCD116"/>
-               <rect width="22" height="4" y="5" fill="#003893"/>
-               <rect width="22" height="5" y="9" fill="#CE1126"/>
-             </svg>`,
-        CO: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="7" y="0" fill="#FCD116"/>
-               <rect width="22" height="3.5" y="7" fill="#003893"/>
-               <rect width="22" height="3.5" y="10.5" fill="#CE1126"/>
-             </svg>`,
-        PE: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="7.33" height="14" x="0" fill="#D91023"/>
-               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
-               <rect width="7.34" height="14" x="14.66" fill="#D91023"/>
-             </svg>`,
-        MX: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="7.33" height="14" x="0" fill="#006847"/>
-               <rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/>
-               <rect width="7.34" height="14" x="14.66" fill="#CE1126"/>
-             </svg>`,
-        AR: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="4.66" y="0" fill="#74ACDF"/>
-               <rect width="22" height="4.66" y="4.66" fill="#FFFFFF"/>
-               <rect width="22" height="4.68" y="9.32" fill="#74ACDF"/>
-             </svg>`,
-        ES: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="3.5" y="0" fill="#AA151B"/>
-               <rect width="22" height="7" y="3.5" fill="#F1BF00"/>
-               <rect width="22" height="3.5" y="10.5" fill="#AA151B"/>
-             </svg>`,
-        US: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="14">
-               <rect width="22" height="14" fill="#B22234"/>
-               <rect y="2" width="22" height="2" fill="#FFF"/>
-               <rect y="6" width="22" height="2" fill="#FFF"/>
-               <rect y="10" width="22" height="2" fill="#FFF"/>
-               <rect width="9" height="7" fill="#3C3B6E"/>
-             </svg>`
+        EC: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="22" height="14" fill="#FCD116"/><rect y="7" width="22" height="4" fill="#003893"/><rect y="11" width="22" height="3" fill="#CE1126"/></svg>`,
+        CO: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="22" height="14" fill="#FCD116"/><rect y="7" width="22" height="3.5" fill="#003893"/><rect y="10.5" width="22" height="3.5" fill="#CE1126"/></svg>`,
+        PE: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="7.33" height="14" x="0" fill="#D91023"/><rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/><rect width="7.34" height="14" x="14.66" fill="#D91023"/></svg>`,
+        MX: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="7.33" height="14" x="0" fill="#006847"/><rect width="7.33" height="14" x="7.33" fill="#FFFFFF"/><rect width="7.34" height="14" x="14.66" fill="#CE1126"/></svg>`,
+        AR: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="22" height="14" fill="#74ACDF"/><rect y="4.66" width="22" height="4.68" fill="#FFFFFF"/></svg>`,
+        ES: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14"><rect width="22" height="14" fill="#AA151B"/><rect y="3.5" width="22" height="7" fill="#F1BF00"/></svg>`,
+        US: (()=>{ const stripes = Array.from({length:13},(_,i)=>`<rect y="${i*(14/13)}" width="22" height="${14/13}" fill="${i%2===0?'#B22234':'#FFF'}"/>`).join(''); return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">${stripes}<rect width="${22*0.4}" height="${14*7/13}" fill="#3C3B6E"/></svg>`; })()
       };
       return svg[country] || svg.ES;
     }
@@ -534,7 +537,6 @@ Códigos detectados:
     /* =========================
        SUBETAPAS + PULSO 100% (UI)
        ========================= */
-    // Guardamos referencia de la función original y “enganchamos” UI sin modificar la lógica interna
     const __originalStartProgress = startProgress;
     startProgress = function(target){
       const ret = __originalStartProgress.call(this, target);
@@ -544,29 +546,21 @@ Códigos detectados:
       const bar = document.getElementById('bar');
       const pctNode = document.getElementById('pct');
 
-      // Hitos alineados a tus plannedLogs
       const stageMarks = [15, 30, 145, 200, 260, 290];
       let pulseDone = false;
 
       const poll = setInterval(()=>{
         if(!pctNode) return;
         const pct = parseInt(pctNode.textContent.replace('%','')) || 0;
-
-        // Aproximamos step a partir del % (tu lógica real sigue intacta)
         const approxStep = Math.round((pct/100) * 300);
 
-        // Actualiza chips (done/active)
         stageMarks.forEach((mark, idx)=>{
           if(!chips[idx]) return;
-          // reset de estado
           chips[idx].classList.remove('active','done');
-          // marcar previos como done
           chips.forEach((c,i)=>{ if(i<idx && approxStep >= mark) c.classList.add('done'); });
-          // marcar activo el más cercano alcanzado
           if(approxStep >= mark) chips[idx].classList.add('active');
         });
 
-        // pulso al 100%
         if(pct >= 100 && !pulseDone){
           pulseDone = true;
           if(bar){
