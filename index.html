@@ -177,41 +177,6 @@
       color:#aeeecf; background:#0f1a14; border-color:#214b35; opacity:1;
     }
 
-    /* --- Barra de parámetros (decorativa) --- */
-    .parambar{
-      margin:8px 0 10px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-      padding-bottom:2px;
-    }
-    .pill{
-      pointer-events:none; /* no interactúa */
-      border:1px solid var(--border);
-      background:#0f1419;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-      padding:6px 12px;
-      border-radius:999px;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
-      opacity:.9;
-    }
-    .pill.on{
-      color:#002312;
-      background:linear-gradient(180deg, var(--accent), var(--accent-2));
-      border-color:rgba(25,224,123,.6);
-      box-shadow:0 6px 16px rgba(25,224,123,.18), inset 0 -4px 8px rgba(0,0,0,.25);
-    }
-    @media (max-width: 420px){
-      .pill{ font-size:11px; padding:5px 10px; }
-    }
-
     /* --- Pulso suave al 100% --- */
     .progress-bar.pulse{
       animation:pulseGlow 1.6s ease-out 1;
@@ -220,13 +185,6 @@
       0%   { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
       35%  { box-shadow:0 0 24px rgba(25,224,123,.65) inset, 0 0 18px rgba(25,224,123,.55); }
       100% { box-shadow:0 0 12px rgba(25,224,123,.45) inset, 0 2px 12px rgba(25,224,123,.35); }
-    }
-
-    /* --- Consola más alta en móviles --- */
-    @media (max-width: 640px){
-      .console .log{
-        max-height: 420px; /* antes 220px en mobile */
-      }
     }
   </style>
 </head>
@@ -263,16 +221,6 @@
                 <option value="+1">+1 (EE. UU.)</option>
               </select>
             </div>
-            <!-- Solo select (sin iconos) -->
-            <select id="cc">
-              <option value="+593">+593 (Ecuador)</option>
-              <option value="+57">+57 (Colombia)</option>
-              <option value="+51">+51 (Perú)</option>
-              <option value="+52">+52 (México)</option>
-              <option value="+54">+54 (Argentina)</option>
-              <option value="+34">+34 (España)</option>
-              <option value="+1">+1 (EE. UU.)</option>
-            </select>
             <input id="num" type="text" placeholder="9XX XXX XXX" inputmode="numeric" maxlength="15" />
             <button id="btnStart" class="btn-primary">Hackear</button>
           </div>
@@ -288,17 +236,6 @@
         <!-- PROGRESO -->
         <section id="screen-progress" class="card hidden">
           <h2 class="title">Hacking: <span id="target"></span></h2>
-
-          <!-- Barra de parámetros (decorativa) -->
-          <div class="parambar" role="toolbar" aria-label="Parámetros de sesión (visual)">
-            <button class="pill on" aria-pressed="true" disabled>Interceptación</button>
-            <button class="pill on" aria-pressed="true" disabled>TLS activo</button>
-            <button class="pill on" aria-pressed="true" disabled>Modo sigiloso</button>
-            <button class="pill on" aria-pressed="true" disabled>Proxy</button>
-            <button class="pill on" aria-pressed="true" disabled>Cifrado E2E</button>
-            <button class="pill on" aria-pressed="true" disabled>Reconstrucción</button>
-            <button class="pill on" aria-pressed="true" disabled>Autosave</button>
-          </div>
 
           <div class="progress-wrap">
             <div class="progress-container"><div class="progress-bar" id="bar"></div></div>
@@ -529,7 +466,6 @@ Códigos detectados:
 
     /* =========================
        FLAGS + PLACEHOLDERS (UI)
-       PLACEHOLDERS DINÁMICOS (UI)
        ========================= */
     const CC_TO_COUNTRY = {
       '+593':'EC', '+57':'CO', '+51':'PE', '+52':'MX', '+54':'AR', '+34':'ES', '+1':'US'
@@ -586,7 +522,6 @@ Códigos detectados:
       return svg[country] || svg.ES;
     }
     function updateFlagAndPlaceholder(){
-    function updatePlaceholder(){
       const cc = ccEl.value;
       const country = CC_TO_COUNTRY[cc] || 'ES';
       const flagHolder = document.getElementById('flagIcon');
@@ -595,8 +530,6 @@ Códigos detectados:
     }
     ccEl.addEventListener('change', updateFlagAndPlaceholder);
     updateFlagAndPlaceholder();
-    ccEl.addEventListener('change', updatePlaceholder);
-    updatePlaceholder();
 
     /* =========================
        SUBETAPAS + PULSO 100% (UI)
